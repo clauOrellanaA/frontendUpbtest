@@ -28,7 +28,7 @@ export default function App() {
   useEffect(() => { const controller = new AbortController(); api.list(controller.signal).then(setProducts).catch(e => { if (e.name !== 'AbortError') setError(e.message); }).finally(() => { if (!controller.signal.aborted) setLoading(false); }); return () => controller.abort(); }, []);
   useEffect(() => { setPage(1); }, [query, filter, sort]);
   useEffect(() => { if (!notice) return; const timer = setTimeout(() => setNotice(''), 4500); return () => clearTimeout(timer); }, [notice]);
-  const filtered = products.filter(p => p.nombre.toLocaleLowerCase().includes(query.trim().toLocaleLowerCase()) && (filter === 'Todos' || status(p.stock) === filter)).sort((a,b) => sort === 'name' ? a.nombre.localeCompare(b.nombre) : sort === 'price' ? b.precio - a.precio : b.id - a.id);
+  const filtered = products.filter(p => p.nombre.toLocaleLowerCase().includes(query.trim().toLocaleLowerCase()) && (filter === 'Todos' || (filter === 'Disponible' ? p.stock > 0 : status(p.stock) === filter))).sort((a,b) => sort === 'name' ? a.nombre.localeCompare(b.nombre) : sort === 'price' ? b.precio - a.precio : b.id - a.id);
   const pages = Math.max(1, Math.ceil(filtered.length / 8));
   const current = Math.min(page, pages);
   const rows = filtered.slice((current - 1) * 8, current * 8);
